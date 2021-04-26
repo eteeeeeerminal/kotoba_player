@@ -1,8 +1,10 @@
 use lindera::tokenizer;
 use lindera_core::core::viterbi::Mode;
 
-#[derive(Clone)]
-pub struct TokenDetail {
+const DETAIL_INFO_LEN:usize = 9;
+
+#[derive(Debug, Clone)]
+pub struct TokenDetailInfo {
     pub part_of_speech:String,
     pub sub_pos1:String,
     pub sub_pos2:String,
@@ -14,23 +16,40 @@ pub struct TokenDetail {
     pub pronunciation:String,
 }
 
-impl TokenDetail {
-    pub fn new(word:tokenizer::Token) -> Self {
-        TokenDetail{
-            part_of_speech: word.detail[0].clone(),
-            sub_pos1: word.detail[1].clone(),
-            sub_pos2: word.detail[2].clone(),
-            sub_pos3: word.detail[3].clone(),
-            conjugation_type: word.detail[4].clone(),
-            conjugation_form: word.detail[5].clone(),
-            base_form: word.detail[6].clone(),
-            reading: word.detail[7].clone(),
-            pronunciation: word.detail[8].clone(),
+impl TokenDetailInfo {
+    pub fn new(detail:&[String]) -> Self {
+        assert_eq!(detail.len(), DETAIL_INFO_LEN);
+        TokenDetailInfo{
+            part_of_speech: detail[0].clone(),
+            sub_pos1: detail[1].clone(),
+            sub_pos2: detail[2].clone(),
+            sub_pos3: detail[3].clone(),
+            conjugation_type: detail[4].clone(),
+            conjugation_form: detail[5].clone(),
+            base_form: detail[6].clone(),
+            reading: detail[7].clone(),
+            pronunciation: detail[8].clone(),
         }
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug)]
+pub enum TokenDetail {
+    Info(TokenDetailInfo),
+    Unknown,
+}
+
+impl TokenDetail {
+    pub fn new(token: &tokenizer::Token) -> Self {
+        if token.detail.len() == DETAIL_INFO_LEN {
+            TokenDetail::Info(TokenDetailInfo::new(&token.detail))
+        }else {
+            Self::Unknown
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct Token {
     pub text: String,
     pub detail: TokenDetail,
@@ -40,7 +59,7 @@ impl Token {
     pub fn new(word: &tokenizer::Token) -> Self {
         Token {
             text: word.text.to_string(),
-            detail: TokenDetail::new(word.clone()),
+            detail: TokenDetail::new(&word),
         }
     }
 }

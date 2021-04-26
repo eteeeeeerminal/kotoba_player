@@ -1,7 +1,9 @@
-use crate::tokenizer::Tokenizer;
+use crate::tokenizer::{
+    Tokenizer, TokenDetail
+};
 
 pub struct KotobaPlayer {
-    tokenizer:Tokenizer
+    pub tokenizer:Tokenizer
 }
 
 impl KotobaPlayer {
@@ -14,16 +16,16 @@ impl KotobaPlayer {
     pub fn parrot(&mut self, text: &str) -> String {
         // 受け取ったテキストから、オウムのセリフを生成します。
         let tokens = self.tokenizer.tokenize(text);
-
         let mut parrot_word = "";
         for token in tokens.iter().rev() {
-            parrot_word = match token.detail.part_of_speech.as_str() {
-                "名詞" | "動詞" | "形容詞" => token.text.as_str(),
-                _ => "",
+            let detail = match &token.detail {
+                TokenDetail::Info(d) => d,
+                TokenDetail::Unknown => continue,
             };
-            if parrot_word.len() > 0 {
+            if let "名詞" | "動詞" | "形容詞" = detail.part_of_speech.as_str() {
+                parrot_word = token.text.as_str();
                 break;
-            }
+            };
         }
 
         format!("{}! {}!", parrot_word, parrot_word)
@@ -40,5 +42,6 @@ mod kotoba_tests {
         // 他にもテストケース書く
         let mut kotoba = KotobaPlayer::new(TEST_DIC_PATH);
         assert_eq!(kotoba.parrot("お宝はいただくぜ"), "いただく! いただく!");
+        assert_eq!(kotoba.parrot("キトさんは、とっても可愛いです。"), "可愛い! 可愛い!");
     }
 }
