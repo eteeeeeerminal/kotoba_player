@@ -13,8 +13,8 @@ impl KotobaPlayer {
         }
     }
 
+    /// 受け取ったテキストから、オウムっぽいテキストを生成します。
     pub fn parrot(&mut self, text: &str) -> String {
-        // 受け取ったテキストから、オウムのセリフを生成します。
         let tokens = self.tokenizer.tokenize(text);
         let mut parrot_word = "";
         for token in tokens.iter().rev() {
