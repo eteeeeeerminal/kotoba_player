@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::tokenizer::{
     Tokenizer, TokenDetail
 };
@@ -6,6 +8,7 @@ pub struct KotobaPlayer {
     pub tokenizer:Tokenizer
 }
 
+#[derive(Serialize, Deserialize)]
 pub enum Mask {
     WordByWord(String),
     CharByChar(char)

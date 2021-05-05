@@ -1,9 +1,10 @@
 use lindera::tokenizer;
 use lindera_core::core::viterbi::Mode;
+use serde::{Serialize, Deserialize};
 
 const DETAIL_INFO_LEN:usize = 9;
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TokenDetailInfo {
     pub part_of_speech:String,
     pub sub_pos1:String,
@@ -33,7 +34,7 @@ impl TokenDetailInfo {
     }
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub enum TokenDetail {
     Info(TokenDetailInfo),
     Unknown,
@@ -49,7 +50,7 @@ impl TokenDetail {
     }
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Token {
     pub text: String,
     pub detail: TokenDetail,
